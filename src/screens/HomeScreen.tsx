@@ -1,19 +1,22 @@
-import {useNavigation} from '@react-navigation/core';
 import React from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {Image, Text} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+import {styles} from '../theme/appTheme';
 
 export const HomeScreen = () => {
-  const navigation = useNavigation();
+  const {top} = useSafeAreaInsets();
 
   return (
-    <View style={{marginTop: 50}}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Pokemon Screen"
-        onPress={() => navigation.navigate('PokemonScreen')}
+    <>
+      <Image
+        source={require('../assets/pokebola.png')}
+        style={styles.pokebolaBG}
       />
-    </View>
+
+      <Text style={{...styles.title, ...styles.globalMargin, top: top + 20}}>
+        Pokedex
+      </Text>
+    </>
   );
 };
-
-const styles = StyleSheet.create({});
