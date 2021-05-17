@@ -1,16 +1,36 @@
-import {useEffect} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import {pokemonApi} from '../api/pokemonAPI';
+import {
+  PokemonPaginatedResponse,
+  Result,
+  SimplePokemon,
+} from '../interfaces/pokemonInterfaces';
 
 export const usePokemonPaginated = () => {
-  const url = 'https://pokeapi.co/api/v2/pokemon/?limit=40';
+  const [simplePokemonList, setSimplePokemonList] = useState<SimplePokemon[]>(
+    [],
+  );
+
+  const nextPageUrl = useRef('https://pokeapi.co/api/v2/pokemon/?limit=40');
 
   const loadPokemons = async () => {
-    const resp = await pokemonApi.get(url);
-    console.log(resp.data);
+    const resp = await pokemonApi.get<PokemonPaginatedResponse>(
+      nextPageUrl.current,
+    );
+    nextPageUrl.current = resp.data.next;
+    mapPokemonList(resp.data.results);
+  };
+
+  const mapPokemonList = (pokemonList: Result[]) => {
+    pokemonList.forEach(poke => console.log(poke.url));
   };
 
   useEffect(() => {
     loadPokemons();
   }, []);
+
+  return {
+    simplePokemonList,
+  };
 };
