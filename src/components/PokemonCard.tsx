@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
   Image,
@@ -24,10 +24,17 @@ interface Props {
 
 export const PokemonCard = ({pokemon}: Props) => {
   const [bgColor, setBgColor] = useState('grey');
+  // Para evitar error cuando hay cambio de estado en un compomente desmontado
+  // Cuando el componente fue desmontado no se va a llamar a getColors
+  const isMounted = useRef(true);
 
   const getColor = useCallback(async () => {
     const colors: AndroidImageColors | IOSImageColors =
       await ImageColors.getColors(pokemon.picture, {fallback: 'grey'});
+
+    if (!isMounted.current) {
+      return;
+    }
 
     colors.platform === 'android'
       ? setBgColor(colors.dominant || 'grey')
@@ -36,6 +43,10 @@ export const PokemonCard = ({pokemon}: Props) => {
 
   useEffect(() => {
     getColor();
+
+    return () => {
+      isMounted.current = false;
+    };
   }, [getColor]);
 
   return (
