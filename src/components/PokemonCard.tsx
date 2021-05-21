@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/core';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Dimensions,
@@ -28,6 +29,8 @@ export const PokemonCard = ({pokemon}: Props) => {
   // Cuando el componente fue desmontado no se va a llamar a getColors
   const isMounted = useRef(true);
 
+  const navigation = useNavigation();
+
   const getColor = useCallback(async () => {
     const colors: AndroidImageColors | IOSImageColors =
       await ImageColors.getColors(pokemon.picture, {fallback: 'grey'});
@@ -50,7 +53,14 @@ export const PokemonCard = ({pokemon}: Props) => {
   }, [getColor]);
 
   return (
-    <TouchableOpacity activeOpacity={0.9}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() =>
+        navigation.navigate('PokemonScreen', {
+          simplePokemon: pokemon,
+          color: bgColor,
+        })
+      }>
       <View
         style={{
           ...styles.cardContainer,
